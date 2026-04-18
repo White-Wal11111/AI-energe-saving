@@ -1,0 +1,186 @@
+/* 全局样式 - 白色浅色主题 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* 卡片通用样式 */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  border-color: #409eff;
+  box-shadow: 0 4px 20px rgba(64, 126, 224, 0.15);
+}
+
+/* 标题通用样式 */
+.page-title {
+  color: #303133;
+  font-size: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 网格布局 */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Element Plus 覆盖样式 */
+.el-card {
+  background: #ffffff !important;
+  border: 1px solid #e8e8e8 !important;
+  color: #303133;
+}
+
+.el-table {
+  background: #ffffff !important;
+  --el-table-bg-color: #ffffff !important;
+  --el-table-tr-bg-color: #ffffff !important;
+  --el-table-header-bg-color: #f5f7fa !important;
+  --el-table-row-hover-bg-color: #ecf5ff !important;
+  --el-table-text-color: #303133 !important;
+  --el-table-header-text-color: #606266 !important;
+  --el-table-border-color: #ebeef5 !important;
+  color: #303133;
+}
+
+.el-table th.el-table__cell {
+  background-color: #f5f7fa !important;
+  font-weight: 600;
+}
+
+.el-dialog {
+  background: #ffffff !important;
+  border-radius: 12px;
+}
+
+.el-dialog__title {
+  color: #303133 !important;
+}
+
+.el-dialog__body {
+  color: #606266 !important;
+}
+
+.el-input__wrapper {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
+}
+
+.el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px #409eff inset !important;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #409eff inset !important;
+}
+
+.el-input__inner {
+  color: #303133 !important;
+}
+
+.el-input__inner::placeholder {
+  color: #c0c4cc !important;
+}
+
+.el-select__wrapper {
+  background: #ffffff !important;
+}
+
+.el-select__selected-item {
+  color: #303133 !important;
+}
+
+.el-select__placeholder {
+  color: #c0c4cc !important;
+}
+
+.el-form-item__label {
+  color: #606266 !important;
+}
+
+.el-radio-button__inner {
+  background: #ffffff !important;
+  border-color: #dcdfe6 !important;
+  color: #606266 !important;
+}
+
+.el-radio-button__original-radio:checked + .el-radio-button__inner {
+  background: #409eff !important;
+  border-color: #409eff !important;
+  color: #ffffff !important;
+}
+
+/* 状态指示器 */
+.status-online {
+  color: #67c23a;
+}
+
+.status-offline {
+  color: #f56c6c;
+}
+
+.status-warning {
+  color: #e6a23c;
+}
+
+/* 动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-title {
+    font-size: 18px;
+  }
+}
