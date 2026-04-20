@@ -181,9 +181,20 @@ const appDist = path.resolve(__dirname, '../public/app')
 // 优先检查 appDist（Docker 部署时构建产物在这里），否则用 frontendDist
 const servePath = fs.existsSync(appDist) ? appDist : (fs.existsSync(frontendDist) ? frontendDist : null)
 if (servePath) {
-  // 前端静态资源
+  // 前端静态资源（JS/CSS等）
   app.use('/assets', express.static(path.join(servePath, 'assets'), { maxAge: '7d' }))
+  
+  // Logo 和其他根目录资源
+  app.use('/logo.png', (req, res) => {
+    res.sendFile(path.join(servePath, 'logo.png'))
+  })
+  app.use('/bg1.png', (req, res) => {
+    res.sendFile(path.join(servePath, 'bg1.png'))
+  })
+  
+  // 所有静态文件
   app.use(express.static(servePath, { index: false }))
+  
   // SPA fallback: 所有非 API/非静态文件请求返回 index.html
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
