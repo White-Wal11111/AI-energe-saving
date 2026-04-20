@@ -301,14 +301,51 @@ onMounted(() => {
   })
 })
 
+// localStorage 缓存 key（与管理后台一致）
+const PORTAL_CACHE_KEY = 'portal_config_cache'
+
+// 从本地缓存读取门户数据
+function loadFromLocalCache(): boolean {
+  try {
+    const cached = localStorage.getItem(PORTAL_CACHE_KEY)
+    if (cached) {
+      const cacheData = JSON.parse(cached)
+      if (cacheData?.data && cacheData?.timestamp) {
+        // 缓存有效期 7 天
+        const age = Date.now() - cacheData.timestamp
+        if (age < 7 * 24 * 60 * 60 * 1000) {
+          data.value = { ...defaultData, ...cacheData.data }
+          console.log('📦 Portal: 使用本地缓存数据')
+          return true
+        }
+      }
+    }
+  } catch {}
+  return false
+}
+
 async function loadPortalData() {
+  // 先尝试从本地缓存加载（解决 API 被限流时无法显示的问题）
+  loadFromLocalCache()
+  
   try {
     const res = await axios.get('/api/portal', { timeout: 10000 })
     if (res.data?.success && res.data.data) {
       data.value = { ...defaultData, ...res.data.data }
+      // API 成功后更新本地缓存
+      try {
+        localStorage.setItem(PORTAL_CACHE_KEY, JSON.stringify({
+          data: res.data.data,
+          timestamp: Date.now()
+        }))
+      } catch {}
+    } else {
+      // API 返回异常但已使用本地缓存，不显示错误
+      console.log('📦 Portal: API 无有效数据，使用本地缓存或默认数据')
     }
   } catch (e: any) {
-    console.warn('Portal data fetch failed, using defaults:', e?.message || e)
+    // API 请求失败（被限流等），已使用本地缓存
+    console.warn('Portal API 请求失败，使用本地缓存:', e?.message || e)
   }
 }
 

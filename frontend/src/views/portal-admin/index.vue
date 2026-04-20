@@ -609,13 +609,33 @@ function addStat() {
   })
 }
 
+// localStorage 缓存 key
+const PORTAL_CACHE_KEY = 'portal_config_cache'
+
+// 保存到 localStorage（供门户页面离线读取）
+function saveToLocalCache(data: any) {
+  try {
+    const cacheData = {
+      data,
+      timestamp: Date.now()
+    }
+    localStorage.setItem(PORTAL_CACHE_KEY, JSON.stringify(cacheData))
+  } catch {}
+}
+
 async function handleSave(silent = false) {
   if (saving.value) return
   saving.value = true
   saveResult.value = ''
+  
+  // 先保存到本地缓存（确保即使 API 失败也能在门户页面看到）
+  saveToLocalCache(form.value)
+  
   try {
     const res = await axios.put('/api/portal', form.value, { headers: getHeaders() })
     if (res.data?.success) {
+      // API 成功后再次更新缓存
+      saveToLocalCache(res.data.data || form.value)
       saveResult.value = isCN.value ? '✅ 保存成功' : '✅ Saved'
       if (!silent) {
         ElNotification({ title: '保存成功', message: '门户配置已成功保存', type: 'success', duration: 3000 })
