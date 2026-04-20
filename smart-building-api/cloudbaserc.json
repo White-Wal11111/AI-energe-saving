@@ -1,0 +1,6 @@
+{
+  "envId": "smart-building-d2gjnbip886faebff",
+  "cloudrun": {
+    "name": "smart-building-api"
+  }
+}

@@ -2,9 +2,26 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import router from './router'
 
+// 自动检测 API 基础地址：本地开发用 localhost，生产环境用当前域名（CloudBase 云函数）
+const getBaseURL = () => {
+  const host = window.location.host
+  // 本地开发环境
+  if (host.includes('localhost') || host.includes('127.0.0.1') || host.includes('loca.lt')) {
+    return '' // 使用 Vite 代理 /api → localhost:4000
+  }
+  // 生产环境 - CloudBase 静态托管 + 云函数
+  // 如果部署到同一域名的云函数触发路径
+  if (host.includes('tcloudbaseapp.com')) {
+    // CloudBase 云函数 HTTP 触发地址
+    return ''
+  }
+  // 其他情况使用相对路径
+  return ''
+}
+
 // 创建 axios 实例
 const api = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: getBaseURL(),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'

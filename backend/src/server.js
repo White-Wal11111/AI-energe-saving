@@ -4,6 +4,9 @@ import helmet from 'helmet'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 import { testConnection, initDatabase } from './config/database.js'
 import dashboardRoutes from './routes/dashboard.js'
@@ -35,8 +38,6 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 // 静态文件服务 - 让上传的文件可通过 /uploads/ 路径访问
-import path from 'path'
-import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 app.use('/uploads', (req, res, next) => {
@@ -162,6 +163,24 @@ function getMockLightingCircuits() {
     { id: 'L003', name: '办公区主灯', status: 'on', brightness: 100, power: 600 },
     { id: 'L004', name: '地下车库灯', status: 'on', brightness: 60, power: 800 }
   ]
+}
+
+// 前端静态文件服务（生产环境部署时使用）
+const frontendDist = path.resolve(__dirname, '../../frontend/dist')
+const appDist = path.resolve(__dirname, '../public/app')
+// 优先检查 appDist（Docker 部署时构建产物在这里），否则用 frontendDist
+const servePath = fs.existsSync(appDist) ? appDist : (fs.existsSync(frontendDist) ? frontendDist : null)
+if (servePath) {
+  // 前端静态资源
+  app.use('/assets', express.static(path.join(servePath, 'assets'), { maxAge: '7d' }))
+  app.use(express.static(servePath, { index: false }))
+  // SPA fallback: 所有非 API/非静态文件请求返回 index.html
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+      res.sendFile(path.join(servePath, 'index.html'))
+    }
+  })
+  console.log(`📁 前端静态文件目录: ${servePath}`)
 }
 
 // 错误处理
