@@ -18,6 +18,8 @@ import deviceRoutes from './routes/device.js'
 import controlRoutes from './routes/control.js'
 import energyMonitorRoutes from './routes/energy-monitor.js'
 import portalRoutes from './routes/portal.js'
+import alertsRoutes from './routes/alerts.js'
+import auditRoutes from './routes/audit.js'
 import { auditLogger } from './middleware/auditLogger.js'
 
 dotenv.config()
@@ -73,6 +75,8 @@ app.use('/api/device', deviceRoutes)
 app.use('/api/control', controlRoutes)
 app.use('/api/energy-monitor', energyMonitorRoutes)
 app.use('/api/portal', portalRoutes)
+app.use('/api/alerts', alertsRoutes)
+app.use('/api/audit', auditRoutes)
 
 // 将 io 实例保存到 app 中，供路由使用
 app.set('io', io)

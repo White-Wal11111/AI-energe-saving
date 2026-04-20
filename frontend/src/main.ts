@@ -10,6 +10,9 @@ import './styles/global.css'
 // 全局 axios 拦截器（处理所有页面的原始 axios 调用）
 import axios from 'axios'
 
+// 生产环境设置后端 API 默认地址
+axios.defaults.baseURL = 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+
 // 响应拦截器：403 时自动清除 token 并跳转登录（排除公开页面）
 axios.interceptors.response.use(
   response => response,

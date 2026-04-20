@@ -143,7 +143,7 @@ const fetchUsers = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await axios.get('/api/auth/users', {
+    const res = await axios.get('https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api/auth/users', {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (res.data.success) {
@@ -186,7 +186,7 @@ const submitForm = async () => {
     const token = localStorage.getItem('token')
     try {
       if (isEdit.value) {
-        const res = await axios.put(`/api/auth/users/${form.id}`, form, {
+        const res = await axios.put(`https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api/auth/users/${form.id}`, form, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (res.data.success) {
@@ -195,7 +195,7 @@ const submitForm = async () => {
           fetchUsers()
         }
       } else {
-        const res = await axios.post('/api/auth/users', form, {
+        const res = await axios.post('https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api/auth/users', form, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (res.data.success) {
@@ -219,7 +219,7 @@ const deleteUser = async (id) => {
     )
 
     const token = localStorage.getItem('token')
-    const res = await axios.delete(`/api/auth/users/${id}`, {
+    const res = await axios.delete(`https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api/auth/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (res.data.success) {

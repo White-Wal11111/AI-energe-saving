@@ -1,12 +1,12 @@
 import axios from 'axios'
 
-// API 基础配置
-const API_BASE = 'http://localhost:4000/api'
+// API 基础配置 - 生产环境指向 CloudRun 后端服务
+const API_BASE = 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api'
 
 // 创建 axios 实例
 const api = axios.create({
   baseURL: API_BASE,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
   }
