@@ -198,6 +198,7 @@ app.use((err, req, res, next) => {
 
 // 启动服务器
 const PORT = process.env.PORT || 4000
+const DEPLOY_VERSION = '2026042014' // 部署版本标记
 
 async function startServer() {
   // 测试数据库连接
