@@ -2,10 +2,10 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import router from './router'
 
-// 后端 CloudRun 服务地址
-const CLOUDRUN_URL = 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+// 后端服务地址 - 前后端同域用相对路径
+const CLOUDRUN_URL = ''
 
-// 创建 axios 实例 - 生产环境指向后端服务
+// 创建 axios 实例
 const api = axios.create({
   baseURL: CLOUDRUN_URL,
   timeout: 30000,

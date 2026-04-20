@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-// API 基础配置 - 生产环境指向 CloudRun 后端服务
-const API_BASE = 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api'
+// API 基础配置 - 生产环境前后端同域用相对路径
+const API_BASE = '/api'
 
 // 创建 axios 实例
 const api = axios.create({

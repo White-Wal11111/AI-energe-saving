@@ -115,7 +115,7 @@ const router = useRouter()
 const isCN = inject('isCN', ref(true))
 
 // 后端 API 地址
-const API_BASE = 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+const API_BASE = ''
 
 // 节能插画路径，上传插画后将图片放入 public/ 目录并修改此路径
 const illustrationSrc = ref('/bg1.png')

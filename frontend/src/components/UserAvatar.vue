@@ -134,7 +134,7 @@ async function handleCommand(command: string) {
 
         if (token) {
           try {
-            await axios.post('https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api/auth/logout', { refreshToken })
+            await axios.post('/api/auth/logout', { refreshToken })
           } catch {
             // ignore
           }

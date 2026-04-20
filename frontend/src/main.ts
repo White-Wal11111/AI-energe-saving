@@ -11,7 +11,10 @@ import './styles/global.css'
 import axios from 'axios'
 
 // 生产环境设置后端 API 默认地址
-axios.defaults.baseURL = 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+// 生产环境前后端同域，用相对路径；开发环境走 Vite 代理
+if (!window.location.host.includes('localhost') && !window.location.host.includes('127.0.0.1')) {
+  axios.defaults.baseURL = window.location.origin
+}
 
 // 响应拦截器：403 时自动清除 token 并跳转登录（排除公开页面）
 axios.interceptors.response.use(
