@@ -351,9 +351,38 @@
       </el-tab-pane>
     </el-tabs>
 
+    <!-- 上传进度条 -->
+    <div class="upload-progress-area" v-if="uploadProgressList.length > 0">
+      <div class="upload-progress-header">
+        <span>{{ isCN ? '文件上传' : 'File Upload' }}</span>
+        <el-tag v-if="uploadProgressList.some(p => p.status === 'uploading')" type="warning" size="small">
+          {{ isCN ? '上传中...' : 'Uploading...' }}
+        </el-tag>
+      </div>
+      <div class="upload-progress-list">
+        <div v-for="(item, idx) in uploadProgressList" :key="idx" class="upload-progress-item"
+             :class="{ 'is-success': item.status === 'success', 'is-error': item.status === 'error' }">
+          <div class="progress-info">
+            <span class="file-name">{{ item.fileName }}</span>
+            <span class="progress-percent">{{ item.progress }}%</span>
+          </div>
+          <el-progress
+            :percentage="item.progress"
+            :status="item.status === 'error' ? 'exception' : (item.status === 'success' ? 'success' : '')"
+            :stroke-width="8"
+            :show-text="false"
+          />
+          <span class="status-text" v-if="item.status === 'success'">{{ isCN ? '完成 - 请点击保存' : 'Done - Click Save' }}</span>
+          <span class="status-text error" v-else-if="item.status === 'error'">{{ isCN ? '失败' : 'Failed' }}</span>
+          <span class="status-text uploading" v-else>{{ isCN ? '上传中...' : 'Uploading...' }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- 保存栏 -->
     <div class="save-bar">
-      <el-button type="primary" size="large" :loading="saving" @click="handleSave()">
+      <el-button type="primary" size="large" :loading="saving" @click="handleSave()"
+                 :disabled="uploadProgressList.some(p => p.status === 'uploading')">
         {{ saving ? (isCN ? '保存中...' : 'Saving...') : saveResult || (isCN ? '保存配置' : 'Save Configuration') }}
       </el-button>
       <el-button size="large" @click="previewPortal">
@@ -373,6 +402,14 @@ const isCN = inject<any>('isCN')
 const activeTab = ref('basic')
 const saving = ref(false)
 const saveResult = ref('')
+
+// 上传进度管理
+interface UploadProgress {
+  fileName: string
+  progress: number
+  status: 'uploading' | 'success' | 'error'
+}
+const uploadProgressList = ref<UploadProgress[]>([])
 
 const productIcons = ['Monitor', 'Cpu', 'DataLine', 'Operation', 'TrendCharts', 'OfficeBuilding', 'Setting', 'Location']
 
@@ -417,17 +454,46 @@ async function loadPortal() {
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
-// 通用文件上传：上传到后端磁盘，返回 URL 路径
-async function uploadFileToServer(fileRaw: File): Promise<string> {
+// 通用文件上传：上传到后端磁盘，返回 URL 路径（带进度条）
+async function uploadFileToServer(fileRaw: File, progressId?: string): Promise<string> {
+  // 添加进度记录
+  const pid = progressId || `upload_${Date.now()}`
+  const progressItem: UploadProgress = {
+    fileName: fileRaw.name,
+    progress: 0,
+    status: 'uploading'
+  }
+  uploadProgressList.value.push(progressItem)
+
   const formData = new FormData()
   formData.append('file', fileRaw)
-  const res = await axios.post('/api/portal/upload', formData, {
-    headers: { ...getHeaders(), 'Content-Type': 'multipart/form-data' }
-  })
-  if (res.data?.success && res.data.url) {
-    return res.data.url
+  
+  try {
+    const res = await axios.post('/api/portal/upload', formData, {
+      headers: { ...getHeaders(), 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          progressItem.progress = Math.min(percent, 99) // 最大显示99%，100%等服务器响应
+        }
+      }
+    })
+    
+    if (res.data?.success && res.data.url) {
+      progressItem.progress = 100
+      progressItem.status = 'success'
+      // 3秒后移除进度条
+      setTimeout(() => {
+        const idx = uploadProgressList.value.indexOf(progressItem)
+        if (idx > -1) uploadProgressList.value.splice(idx, 1)
+      }, 3000)
+      return res.data.url
+    }
+    throw new Error(res.data?.error || 'Upload failed')
+  } catch (e: any) {
+    progressItem.status = 'error'
+    throw e
   }
-  throw new Error(res.data?.error || 'Upload failed')
 }
 
 async function handleImageChange(key: string, file: any) {
@@ -437,10 +503,9 @@ async function handleImageChange(key: string, file: any) {
     return
   }
   try {
-    const url = await uploadFileToServer(file.raw)
+    const url = await uploadFileToServer(file.raw, `img_${key}`)
     ;(form.value as any)[key] = url
-    ElMessage.success(isCN.value ? '图片上传成功' : 'Image uploaded')
-    await handleSave(true)
+    ElMessage.success(isCN.value ? '图片上传成功，请点击保存' : 'Image uploaded, please click Save')
   } catch (e) {
     ElMessage.error(isCN.value ? '图片上传失败' : 'Image upload failed')
     console.error('Upload error:', e)
@@ -454,10 +519,9 @@ async function handleItemImageChange(row: any, file: any) {
     return
   }
   try {
-    const url = await uploadFileToServer(file.raw)
+    const url = await uploadFileToServer(file.raw, `rowimg_${row.id}`)
     row.image = url
-    ElMessage.success(isCN.value ? '图片上传成功' : 'Image uploaded')
-    await handleSave(true)
+    ElMessage.success(isCN.value ? '图片上传成功，请点击保存' : 'Image uploaded, please click Save')
   } catch (e) {
     ElMessage.error(isCN.value ? '图片上传失败' : 'Image upload failed')
     console.error('Upload error:', e)
@@ -471,12 +535,11 @@ async function handleSolutionFileChange(row: any, file: any) {
     return
   }
   try {
-    const url = await uploadFileToServer(file.raw)
+    const url = await uploadFileToServer(file.raw, `solution_${row.id}`)
     row.solution_file = url
-    ElMessage.success(isCN.value ? '方案文件上传成功' : 'Solution file uploaded')
-    await handleSave(true)
+    ElMessage.success(isCN.value ? '方案文件上传成功，请点击保存' : 'Solution uploaded, please click Save')
   } catch (e) {
-    ElMessage.error(isCN.value ? '方案文件上传失败' : 'Solution file upload failed')
+    ElMessage.error(isCN.value ? '方案文件上传失败' : 'Solution upload failed')
     console.error('Upload error:', e)
   }
 }
@@ -673,5 +736,76 @@ onMounted(() => {
   top: -8px;
   right: -8px;
   z-index: 1;
+}
+
+/* 上传进度条样式 */
+.upload-progress-area {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+}
+.upload-progress-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #303133;
+}
+.upload-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.upload-progress-item {
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #ebeef5;
+  transition: all 0.3s;
+}
+.upload-progress-item.is-success {
+  border-color: #67c23a;
+  background: #f0f9eb;
+}
+.upload-progress-item.is-error {
+  border-color: #f56c6c;
+  background: #fef0f0;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.file-name {
+  font-size: 13px;
+  color: #606266;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.progress-percent {
+  font-size: 13px;
+  font-weight: 600;
+  color: #409eff;
+}
+.status-text {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+  color: #909399;
+}
+.status-text.success {
+  color: #67c23a;
+}
+.status-text.error {
+  color: #f56c6c;
+}
+.status-text.uploading {
+  color: #e6a23c;
 }
 </style>
