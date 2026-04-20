@@ -371,7 +371,11 @@ async function runDeepSeekAnalysis() {
   
   try {
     // 调用后端 DeepSeek API
-    const response = await fetch('http://localhost:4000/api/ac/ai/deepseek-analysis', {
+    const apiBaseUrl = import.meta.env.PROD 
+      ? 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+      : 'http://localhost:4000';
+    
+    const response = await fetch(`${apiBaseUrl}/api/ac/ai/deepseek-analysis`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -621,7 +625,11 @@ onUnmounted(() => {
 
 async function fetchRealTimeData() {
   try {
-    const response = await fetch('http://localhost:4000/api/ac/energy/stats')
+    const apiBaseUrl = import.meta.env.PROD 
+      ? 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+      : 'http://localhost:4000';
+    
+    const response = await fetch(`${apiBaseUrl}/api/ac/energy/stats`)
     const result = await response.json()
     
     if (result.success) {

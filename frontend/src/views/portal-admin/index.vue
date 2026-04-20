@@ -394,10 +394,12 @@
 
 <script setup lang="ts">
 import { ref, inject, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElNotification } from 'element-plus'
 import { Plus, Close } from '@element-plus/icons-vue'
 import axios from 'axios'
 
+const router = useRouter()
 const isCN = inject<any>('isCN')
 const activeTab = ref('basic')
 const saving = ref(false)
@@ -452,7 +454,8 @@ async function loadPortal() {
   }
 }
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+const MAX_FILE_SIZE = 300 * 1024 // 300KB
+const MAX_SOLUTION_FILE_SIZE = 3 * 1024 * 1024 // 3MB
 
 // 通用文件上传：上传到后端磁盘，返回 URL 路径（带进度条）
 async function uploadFileToServer(fileRaw: File, progressId?: string): Promise<string> {
@@ -499,7 +502,7 @@ async function uploadFileToServer(fileRaw: File, progressId?: string): Promise<s
 async function handleImageChange(key: string, file: any) {
   if (!file?.raw) return
   if (file.raw.size > MAX_FILE_SIZE) {
-    ElMessage.warning(isCN.value ? '文件过大，请选择小于 50MB 的图片' : 'Image too large, please select under 50MB')
+    ElMessage.warning(isCN.value ? '文件过大，请选择小于 300KB 的图片' : 'Image too large, please select under 300KB')
     return
   }
   try {
@@ -515,7 +518,7 @@ async function handleImageChange(key: string, file: any) {
 async function handleItemImageChange(row: any, file: any) {
   if (!file?.raw) return
   if (file.raw.size > MAX_FILE_SIZE) {
-    ElMessage.warning(isCN.value ? '文件过大' : 'File too large')
+    ElMessage.warning(isCN.value ? '文件过大，请选择小于 300KB 的图片' : 'File too large, please select under 300KB')
     return
   }
   try {
@@ -530,8 +533,8 @@ async function handleItemImageChange(row: any, file: any) {
 
 async function handleSolutionFileChange(row: any, file: any) {
   if (!file?.raw) return
-  if (file.raw.size > MAX_FILE_SIZE) {
-    ElMessage.warning(isCN.value ? '文件过大，请选择小于 50MB 的文件' : 'File too large, please select under 50MB')
+  if (file.raw.size > MAX_SOLUTION_FILE_SIZE) {
+    ElMessage.warning(isCN.value ? '文件过大，请选择小于 3MB 的文件' : 'File too large, please select under 3MB')
     return
   }
   try {
@@ -666,7 +669,8 @@ async function handleSave(silent = false) {
 }
 
 function previewPortal() {
-  window.open('/portal', '_blank')
+  const resolved = router.resolve({ name: 'Portal' })
+  window.open(resolved.href, '_blank')
 }
 
 onMounted(() => {

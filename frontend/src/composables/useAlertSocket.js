@@ -23,7 +23,12 @@ export function initSocket() {
     return socket
   }
 
-  socket = io('http://localhost:4000', {
+  // 根据环境使用不同的URL
+  const socketUrl = import.meta.env.PROD 
+    ? 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+    : 'http://localhost:4000';
+  
+  socket = io(socketUrl, {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionAttempts: 10,

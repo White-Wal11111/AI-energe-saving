@@ -1,5 +1,19 @@
 # AI预测中央空调控制系统 (AI-Predictive HVAC Control System)
 
+## 🚀 部署状态
+**✅ 已成功部署到腾讯云CloudBase**
+
+**访问地址**: https://smart-building-d2gjnbip886faebff-1423421501.tcloudbaseapp.com
+
+**部署信息**:
+- **前端**: 静态托管 (Vue 3 + Vite)
+- **后端**: 容器型云托管 (Node.js + Express)
+- **数据库**: MySQL (已配置)
+- **部署时间**: 2026-04-20
+- **版本**: 1.0.1
+
+**快速测试**: 运行 `./deploy-test.sh` 测试部署状态
+
 ## 📋 项目简介
 
 基于前后端分离架构的AI预测中央空调控制系统，通过AI预测冷负荷需求，实时优化冷水机组运行参数，实现 **15-25% 节能效果**。
@@ -161,6 +175,95 @@ npm run dev
 - `GET /api/monitor/alerts` - 告警记录
 
 ## 🌐 部署
+
+### CloudBase 云部署
+
+项目已部署到腾讯云CloudBase，包含完整的后端API服务和前端静态托管。
+
+#### 部署信息
+
+**版本**: 1.0.1 (2026-04-20)
+
+**后端API服务**:
+- 服务名称: `smart-building-api`
+- 访问地址: `https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com`
+- 服务类型: 容器型云托管 (CloudRun)
+- 配置: 1核CPU / 2GB内存 / 端口4000
+- 环境变量: 已配置MySQL数据库连接、JWT密钥等
+
+**前端应用**:
+- 静态托管域名: `https://smart-building-d2gjnbip886faebff-1423421501.tcloudbaseapp.com`
+- 构建版本: Vue 3 + Vite 生产构建
+- API代理: 已配置指向后端API服务
+
+**数据库**:
+- MySQL数据库已配置并运行
+- 连接信息通过环境变量管理
+
+#### 访问地址
+
+1. **生产环境**:
+   - 前端应用: https://smart-building-d2gjnbip886faebff-1423421501.tcloudbaseapp.com
+   - 后端API: https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com
+   - 健康检查: https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com/api/health
+   - Socket.IO: wss://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com
+
+2. **开发环境**:
+   - 前端: http://localhost:3000
+   - 后端: http://localhost:4000
+
+#### 部署流程
+
+1. **更新版本号**:
+   ```bash
+   # 更新后端版本
+   cd backend && npm version patch
+   # 更新前端版本  
+   cd frontend && npm version patch
+   ```
+
+2. **构建前端**:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+3. **部署后端** (如果需要更新):
+   ```bash
+   # 使用CloudBase MCP工具部署
+   # 或通过CloudBase控制台更新
+   ```
+
+4. **上传前端文件**:
+   ```bash
+   # 使用CloudBase MCP工具上传dist目录到静态托管
+   ```
+
+#### 环境配置
+
+后端环境变量已配置:
+- `NODE_ENV=production`
+- `DB_HOST=TENCENT64.site`
+- `DB_PORT=28266`
+- `DB_USER=root`
+- `DB_PASSWORD=******`
+- `DB_NAME=smart-building-d2gjnbip886faebff`
+- `JWT_SECRET=smart-building-jwt-secret-2024`
+- `PORT=4000`
+
+#### 监控和管理
+
+1. **CloudBase控制台**:
+   - 环境管理: https://tcb.cloud.tencent.com/dev?envId=smart-building-d2gjnbip886faebff#/overview
+   - 云托管服务: https://tcb.cloud.tencent.com/dev?envId=smart-building-d2gjnbip886faebff#/platform-run
+   - 静态托管: https://tcb.cloud.tencent.com/dev?envId=smart-building-d2gjnbip886faebff#/static-hosting
+   - 数据库管理: https://tcb.cloud.tencent.com/dev?envId=smart-building-d2gjnbip886faebff#/db/mysql/table/default/
+
+2. **日志查看**:
+   - 后端日志: CloudBase控制台 → 云托管 → 服务详情 → 日志
+   - 前端访问日志: CloudBase控制台 → 静态托管 → 访问日志
+
+#### 本地开发
 
 ### 前端部署
 ```bash

@@ -1,6 +1,6 @@
 {
   "name": "smart-building-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "智慧楼宇综合管理系统后端",
   "main": "src/server.js",
   "type": "module",

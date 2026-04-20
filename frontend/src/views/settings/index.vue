@@ -159,7 +159,9 @@ const settings = ref({
   language: 'zh-CN',
   theme: 'dark',
   apiKey: '',
-  serverUrl: 'http://localhost:4000',
+  serverUrl: import.meta.env.PROD 
+    ? 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+    : 'http://localhost:4000',
   refreshInterval: 10000
 })
 
@@ -198,7 +200,9 @@ function resetSettings() {
     language: 'zh-CN',
     theme: 'dark',
     apiKey: '',
-    serverUrl: 'http://localhost:4000',
+    serverUrl: import.meta.env.PROD 
+      ? 'https://smart-building-api-248043-6-1423421501.sh.run.tcloudbase.com'
+      : 'http://localhost:4000',
     refreshInterval: 10000
   }
   notifySettings.value = {

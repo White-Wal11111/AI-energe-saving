@@ -167,6 +167,17 @@ onMounted(() => {
   // 获取雅加达实时温度，每15分钟刷新
   fetchWeather()
   weatherTimer = setInterval(fetchWeather, 15 * 60 * 1000)
+  
+  // 解决CloudBase静态托管SPA路由问题
+  // 如果当前URL没有hash且路径是/portal，自动跳转到/#/portal
+  const currentPath = window.location.pathname
+  const currentHash = window.location.hash
+  if (currentPath === '/portal' && !currentHash) {
+    // 延迟跳转，确保Vue Router已初始化
+    setTimeout(() => {
+      window.location.href = '/#/portal'
+    }, 100)
+  }
 })
 
 watch(() => route.path, () => {
