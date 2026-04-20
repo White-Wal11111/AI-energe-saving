@@ -50,9 +50,12 @@ app.use('/uploads', (req, res, next) => {
 // SSL 证书验证文件
 app.use('/.well-known/pki-validation', express.static(path.resolve(__dirname, '../public/.well-known/pki-validation')))
 
-// 设置响应头字符集（仅对 API 路由设置，静态文件由 express.static 自动处理 Content-Type）
+// 设置响应头字符集（仅对 API 路由设置 JSON Content-Type）
 app.use((req, res, next) => {
-  if (req.path.startsWith('/uploads')) {
+  // 静态文件、HTML页面、证书验证等不设置JSON类型
+  if (req.path.startsWith('/uploads') || req.path.startsWith('/assets') || 
+      req.path.startsWith('/.well-known') || req.path.startsWith('/logo') || 
+      req.path === '/' || !req.path.startsWith('/api')) {
     return next()
   }
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
