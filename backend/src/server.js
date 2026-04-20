@@ -47,6 +47,9 @@ app.use('/uploads', (req, res, next) => {
   next()
 }, express.static(path.resolve(__dirname, '../public/uploads')))
 
+// SSL 证书验证文件
+app.use('/.well-known/pki-validation', express.static(path.resolve(__dirname, '../public/.well-known/pki-validation')))
+
 // 设置响应头字符集（仅对 API 路由设置，静态文件由 express.static 自动处理 Content-Type）
 app.use((req, res, next) => {
   if (req.path.startsWith('/uploads')) {
